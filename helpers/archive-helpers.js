@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var request = require('request');
+var Promise = require('bluebird');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -39,7 +40,7 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.writeFile(exports.paths.list, url + '\n', (err, res) => {
+  fs.appendFile(exports.paths.list, url + '\n', (err, res) => {
     if (err) { callback(err); }
     callback(null, res);
   });
@@ -56,7 +57,7 @@ exports.downloadUrls = function(urls) {
   urls.forEach((url) => {
     request('http://' + url, function(err, res, body) {
       if (err) { return callback(err); }
-      fs.writeFile(exports.paths.archivedSites + '/' + url, body, function(err) {
+      fs.appendFile(exports.paths.archivedSites + '/' + url, body, function(err) {
         if (err) {
           callback(err);
         }
@@ -64,3 +65,19 @@ exports.downloadUrls = function(urls) {
     });
   });
 };
+
+/////////////////// promise version ////////////////////
+// exports.readListOfUrls = function() {
+//   return new Promise((resolve, reject) => {
+//     fs.readFile(exports.paths.list, 'utf8', (err, res) => {
+//       if (err) { reject(err); }
+//       let array = res.split('\n');
+//       resolve(array);
+//     });
+//   });
+// };
+// exports.isUrlInList = function(url) {
+//   return new Promise((resolve, reject) => {
+//     exports.readListOfUrls((arr) => callback(arr.indexOf(url) > -1));
+//   })
+// };
