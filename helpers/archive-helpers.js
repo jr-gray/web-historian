@@ -7,7 +7,7 @@ var _ = require('underscore');
  * Consider using the `paths` object below to store frequently used file paths. This way,
  * if you move any files, you'll only need to change your code in one place! Feel free to
  * customize it in any way you wish.
- */
+*/
 
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
@@ -26,16 +26,32 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+  fs.readFile(exports.paths.list, 'utf8', (err, res) => {
+    if (err) { return callback(err); }
+    let array = res.split('\n');
+    callback(array);
+  });
 };
 
 exports.isUrlInList = function(url, callback) {
+  exports.readListOfUrls((arr) => callback(arr.indexOf(url) > -1));
 };
 
 exports.addUrlToList = function(url, callback) {
+  fs.writeFile(exports.paths.list, url + '\n', (err, res) => {
+    if (err) { callback(err); }
+    callback(null, res);
+  });
 };
 
 exports.isUrlArchived = function(url, callback) {
+  fs.readdir(exports.paths.archivedSites, (err, files) => {
+    if (err) { return callback(err); }
+    callback(files.indexOf(url) > -1);
+  });
 };
 
 exports.downloadUrls = function(urls) {
+  // read list of urls
+  // 
 };
